@@ -14,7 +14,7 @@ USE employees;
 	SELECT first_name, last_name
 	FROM employees 
 	WHERE last_name LIKE 'E%E'
-	GROUP BY first_nam, last_name;
+	GROUP BY first_name, last_name;
 
 #Write a query to find the unique last names with a 'q' but not 'qu'. Include those names in a comment in your sql code.
 #Chleq
@@ -23,7 +23,7 @@ USE employees;
 	SELECT last_name
 	FROM employees 
 	WHERE last_name LIKE '%q%'
-	AND NOT last_name LIKE '%QU%'
+	AND  last_name NOT LIKE '%QU%'
 	GROUP BY last_name;
 	
 #Add a COUNT() to your results (the query above) and use ORDER BY to make it easier to find employees whose unusual name is shared with others.
@@ -33,23 +33,39 @@ USE employees;
 	AND NOT last_name LIKE '%QU%'
 	GROUP BY last_name 
     ORDER BY COUNT(*);
-	
+	 
 
 #Find all all employees with first names 'Irena', 'Vidya', or 'Maya'. Use COUNT(*) and GROUP BY to find the number of employees for each gender with those names.
-	SELECT first_name, gender, COUNT(*)
-	FROM employees
-	WHERE first_name IN ('Irena','Vidya', 'Maya')
-	GROUP BY first_name, gender
-	ORDER BY COUNT(*);
+		SELECT
+	gender,
+	COUNT(first_name) AS number_of_employees,
+	first_name
+FROM employees
+WHERE first_name IN('Irena', 'Vidya', 'Maya')
+GROUP BY gender, first_name
+ORDER BY first_name;
+/*
+M	144	Irena
+F	97	Irena
+M	146	Maya
+F	90	Maya
+F	81	Vidya
+M	151	Vidya
+*/
+
 
 #Using your query that generates a username for all of the employees, generate a count employees for each unique username. Are there any duplicate usernames? BONUS: How many duplicate usernames are there?
-	SELECT lower(concat(
-	   substr(first_name,1,1),
-	   substr(last_name,1,4),
-	    "_",
-	   substr(birth_date, 6, 2),
-	   substr(birth_date, 3, 2))
-	    ) AS username, count(*)
+	SELECT 
+		LOWER(
+				CONCAT(
+					SUBSTR(first_name, 1, 1),
+					SUBSTR(last_name, 1, 4),
+					'_',
+					SUBSTR(birth_date, 6, 2),
+					SUBSTR(birth_date, 3, 2)
+					)
+				) AS username,
+		COUNT(*) AS number_of_duplicates
 	FROM employees
 	GROUP BY username
-	ORDER BY count(*) DESC;
+	HAVING number_of_duplicates > 1;
