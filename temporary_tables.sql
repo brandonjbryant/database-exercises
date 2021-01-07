@@ -29,6 +29,8 @@ FROM employees.employees_with_departments);
 SELECT *
 FROM employees_with_departments_copy;
 
+DROP TEMPORARY TABLE employees_with_departments_copy;
+
 #2. Create a temporary table based on the payment table from the sakila database.Write the SQL necessary to transform the amount column such that it is stored as an integer representing the number of cents of the payment. For example, 1.99 should become 199.
 CREATE TEMPORARY TABLE sakila_payments (SELECT * 
 	from sakila.payment);
@@ -50,63 +52,45 @@ FROM sakila_payments;
 
 
 #3. Find out how the current average pay in each department compares to the overall, historical average pay. In order to make the comparison easier, you should use the Z-score for salaries. In terms of salary, what is the best department right now to work for? The worst?
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+USE easley_1267;
 
 #temp table for single value used later in z-score calc
-create temporary table historical_avg_salary (select avg(salary) 
-from employees.salaries); #$63810.7448
+CREATE TEMPORARY TABLE historical_average_salary(SELECT AVG(SALARY)
+FROM employees.salaries);#$63810.7448
 
-#sanity check
-select *
-from historical_avg_salary;
+DROP TEMPORARY TABLE historical_avg;
+
+
+
+
+#check
+SELECT *
+FROM historical_average_salary;
 
 #temp table with dept_name and avg_salary grouped by dept_name
-create temporary table department_avg_salary (select dept_name, avg(salary) as avg_salary
-from employees.salaries
-join employees.dept_emp using (emp_no)
-join employees.departments using (dept_no)
-where employees.salaries.to_date > curdate()
-group by dept_name
-ORDER BY avg_salary Desc);
-
-#sanity check
-select * 
-from department_avg_salary;
+CREATE TEMPORARY TABLE dept_avg_salary (SELECT dept_name, AVG(salary) AS avg_salary
+FROM employees.salaries
+JOIN employees.dept_emp USING (emp_no)
+JOIN employees.departments USING (dept_no)
+WHERE employees.salaries.to_date > curdate()
+GROUP BY dept_name
+ORDER BY avg_salary DESC);
 
 
-#added z-score column using z=(x-u)/stddev
-select *, round(
-				(avg_salary - (select * from historical_avg_salary))
+#Check
+SELECT * 
+FROM dept_avg_salary;
+
+
+#z-score column using z=(x-u)/stddev
+SELECT *, round(
+				(avg_salary - (SELECT * FROM historical_average_salary))
 			                         /
-				(select stddev(salary)from employees.salaries)
+				(SELECT stddev(salary) FROM employees.salaries)
 				
-				,3) as z_score
+				,3) AS z_score
 				
-from department_avg_salary;
+from dept_avg_salary;
 					
 /*					Current
 Dept_name			Avg_salary  Z-score
