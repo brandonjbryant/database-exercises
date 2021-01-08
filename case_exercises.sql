@@ -12,7 +12,18 @@
    		
    		
 -- Write a query that returns all employee names (previous and current), and a new column 'alpha_group' that returns 'A-H', 'I-Q', or 'R-Z' depending on the first letter of their last name.
-
+  SELECT first_name, last_name,
+  	CASE
+  		WHEN substr(last_name, 1, 1)
+  			IN ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
+  			THEN 'A-H'
+  		WHEN substr(last_name,1, 1)
+  			IN('I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q')
+  			THEN 'I-Q'
+  		ELSE 'R-Z'
+  	END AS alpha_group
+  	FROM employees
+  	ORDER BY last_name; 
 -- How many employees (current or previous) were born in each decade?
 
 -- BONUS
