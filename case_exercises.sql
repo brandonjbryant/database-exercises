@@ -42,7 +42,7 @@
 			FROM employees.employees);
 			
 	select sum(decade_of_birth)
-	from fifties_employees;
+	from fifties_employees; -- 182886
 		
 	CREATE TEMPORARY TABLE sixties_employees AS(
 			SELECT birth_date,
@@ -50,7 +50,7 @@
 			FROM employees.employees);
 	
 	select sum(decade_of_birth)
-	from fifties_employees;
+	from sixties_employees; -- 117138
 			
 			
 
